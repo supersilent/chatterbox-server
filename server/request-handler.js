@@ -11,7 +11,7 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-var dataObj = { results: [] };
+var dataObj = { results: [{text:'hello, world', username:'test', roomname:'test', objectId: '0'}] };
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -42,7 +42,7 @@ exports.requestHandler = function(request, response) {
 
   headers["Content-Type"] = "application/json";
 
-  if (request.method === 'GET' && request.url === '/classes/messages') {
+  if (request.method === "GET" && request.url.includes("/classes/messages")) {
     // The outgoing status.
     var statusCode = 200;
     // .writeHead() writes to the request line and headers of the response,
@@ -60,23 +60,27 @@ exports.requestHandler = function(request, response) {
     // console.log("This is dataObj", dataObj);
 
     response.end(JSON.stringify(dataObj));
-  } else if (request.method === 'POST') {
+  } else if (request.method === "POST") {
     let body;
-    request.on('data', chunk => {
+    request.on("data", chunk => {
       body = JSON.parse(chunk); // convert Buffer to string
+      body['objectId'] = Date.now();
       dataObj.results.push(body);
     });
-    request.on('end', () => {
-      var statusCode = 201; 
+    request.on("end", () => {
+      var statusCode = 201;
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(dataObj));
+      response.end(JSON.stringify(body));
     });
-   
-    
+  } else if (request.method === "OPTIONS") {
+    var statusCode = 200;
+    console.log('Options!');
+    response.writeHead(statusCode, headers);
+    response.end('Options');
   } else {
     var statusCode = 404;
     response.writeHead(statusCode, headers);
-    response.end();
+    response.end('error');
   }
 };
 
