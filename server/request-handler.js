@@ -12,6 +12,12 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var dataObj = { results: [{text:'hello, world', username:'test', roomname:'test', objectId: '0'}] };
+defaultCorsHeaders = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, accept",
+  "access-control-max-age": 10 // Seconds.
+};
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -76,7 +82,7 @@ exports.requestHandler = function(request, response) {
     var statusCode = 200;
     console.log('Options!');
     response.writeHead(statusCode, headers);
-    response.end('Options');
+    response.end('ok');
   } else {
     var statusCode = 404;
     response.writeHead(statusCode, headers);
@@ -93,9 +99,3 @@ exports.requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-defaultCorsHeaders = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 10 // Seconds.
-};
