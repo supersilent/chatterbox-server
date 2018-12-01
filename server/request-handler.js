@@ -60,16 +60,19 @@ exports.requestHandler = function(request, response) {
     // console.log("This is dataObj", dataObj);
 
     response.end(JSON.stringify(dataObj));
-  } else if (request.method === 'POST' && request.url === '/classes/messages') {
+  } else if (request.method === 'POST') {
     let body;
     request.on('data', chunk => {
-      body = JSON.parse(chunk.toString()); // convert Buffer to string
+      body = JSON.parse(chunk); // convert Buffer to string
       dataObj.results.push(body);
     });
-
-    var statusCode = 201;
-    response.writeHead(statusCode, headers);
-    response.end();
+    request.on('end', () => {
+      var statusCode = 201; 
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify(dataObj));
+    });
+   
+    
   } else {
     var statusCode = 404;
     response.writeHead(statusCode, headers);
